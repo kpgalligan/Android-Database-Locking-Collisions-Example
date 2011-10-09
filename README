@@ -1,0 +1,1 @@
+Example app showing how you can cause DB collisions pretty easily with multiple SQLiteHelper instances.
