@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+<TextView  
+    android:layout_width="fill_parent" 
+    android:layout_height="wrap_content" 
+    android:text="Hello World, MyActivity"
+    />
+    <Button
+            android:id="@+id/oneHelper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="One Helper"/>
+    <Button
+            android:id="@+id/manyHelpers"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Many Helpers"/>
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/results"
+            android:text=""/>
+
+</LinearLayout>
+
