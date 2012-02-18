@@ -1,1 +1,3 @@
 Example app showing how you can cause DB collisions pretty easily with multiple SQLiteHelper instances.
+
+Also demonstrate dramatic time difference using transactions.
