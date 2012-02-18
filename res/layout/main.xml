@@ -20,6 +20,40 @@
             android:layout_height="wrap_content"
             android:text="Many Helpers"/>
 
+    <Button
+            android:id="@+id/testTransactionIsolation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Test Transaction Isolation"/>
+
+    <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/numberOfInserts"/>
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="No Transaction"
+                android:id="@+id/noTrans"/>
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Transaction"
+                android:id="@+id/trans"/>
+    </LinearLayout>
+
+    <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/timeOut"/>
+
+
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"

@@ -27,6 +27,16 @@ public class DatabaseHelper extends SQLiteOpenHelper
             };
 
 
+    public static synchronized DatabaseHelper getInstance(Context context)
+    {
+        if(helper == null)
+        {
+            helper = new DatabaseHelper(context);
+        }
+
+        return helper;
+    }
+
     public DatabaseHelper(Context context)
     {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -59,6 +69,13 @@ public class DatabaseHelper extends SQLiteOpenHelper
         contentValues.put("description", desc);
 
         writableDatabase.insertOrThrow("session", null, contentValues);
+    }
+    
+    public int countSessions()
+    {
+        Cursor cursor = getReadableDatabase().rawQuery("select count(*) from session", null);
+        cursor.moveToFirst();
+        return cursor.getInt(0);
     }
 
     public void updateSession(Integer id, String desc)
