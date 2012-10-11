@@ -1,3 +1,16 @@
 Example app showing how you can cause DB collisions pretty easily with multiple SQLiteHelper instances.
 
 Also demonstrate dramatic time difference using transactions.
+
+Button	:Description
+1 Write	:Perform writes from multiple threads using only one instance of a DatabaseHelper. This should never cause a failure
++ Write	:Perform writes from multiple threads, each thread with its own DatabaseHelper. First failure in a thread will end that thread leaving only one thread able to complete it's process. The ticker bar should have one dominant color [blue,white,yellow,red] (red at beginning and end signify start and end of run)
+1 Write + Read	:One thread performs writes while other threads perform reads. All threads have their own copy of DatabaseHelper. Failures can occur but if you're lucky, they won't.
++ Read	:All threads perform reads with their own copy of DatabaseHelper. Failures can occur but if you're lucky, they won't.
+Test Transaction Isolation	:Interleaving reads and writes with the same copy of DatabaseHelper will not fail but transactions are exclusive and cannot be disturbed.
+No Transaction	:Perform a timed series of writes individually 
+Transaction :Perform a timed series of writes in a transaction
+Exclusive No Yielding	:One long running transaction and many short running transactions are performed. Each transaction is exclusive and must complete before another transaction/operation is allowed. The ticker bar should show the long transaction finishing before trailing short transactions run.
+Safely Contended Yield	:One long running transaction yielding at times to allow short running transactions to perform their operations. The ticker bar should show short transactions finishing before the long transaction finishes.
+No Yield Read	:A thread performing writes in a transaction is followed by other threads performing reads. The write transaction must complete before reads can be made
+Yield and Read	:A thread performing writes in a transaction yields to following threads performing reads. The yielding allows a few reads to execute before waiting for the entire write transaction to complete.
