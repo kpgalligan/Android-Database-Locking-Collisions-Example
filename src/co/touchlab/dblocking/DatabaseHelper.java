@@ -3,8 +3,10 @@ package co.touchlab.dblocking;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 
 import java.util.*;
 
@@ -17,15 +19,10 @@ import java.util.*;
  */
 public class DatabaseHelper extends SQLiteOpenHelper
 {
-    private static final String DATABASE_NAME = "dblocking.db";
+    static final String DATABASE_NAME = "dblocking.db";
     private static final int DATABASE_VERSION = 1;
-    private static DatabaseHelper helper;
-    public static final String[] SESSION_COLS = new String[]
-            {
-                    "id",
-                    "description"
-            };
 
+    private static DatabaseHelper helper;
 
     public static synchronized DatabaseHelper getInstance(Context context)
     {
@@ -42,78 +39,120 @@ public class DatabaseHelper extends SQLiteOpenHelper
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    static final class SessionTable implements BaseColumns {
+        static final String NAME = "session";
+
+        static final String DESCRIPTION = "description";
+
+        static final String[] COLS = new String[] {
+                _ID
+                ,DESCRIPTION
+        };
+
+        static final String CREATE = String.format(
+                "CREATE TABLE %1$s (" +
+                        " %2$s INTEGER PRIMARY KEY AUTOINCREMENT" +
+                        ",%3$s TEXT" +
+                        ")"
+                ,NAME
+                ,_ID
+                ,DESCRIPTION
+        );
+
+    }
+
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase)
     {
-        String createSessionTable =
-                "CREATE TABLE `session` " +
-                        "(" +
-                        "`id` INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                        "`description` VARCHAR" +
-                        ") ";
-        sqLiteDatabase.execSQL(createSessionTable);
+        sqLiteDatabase.execSQL(SessionTable.CREATE);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1)
     {
-        sqLiteDatabase.execSQL("drop table session");
+        sqLiteDatabase.execSQL(String.format("DROP TABLE %1$s", SessionTable.NAME));
         onCreate(sqLiteDatabase);
     }
 
-    public void createSession(String desc)
+    /**
+     * Tries to insert a session with description
+     * @param desc
+     * @throws SQLException on insert error
+     */
+    public void insertSession(String desc) throws SQLException
     {
         final SQLiteDatabase writableDatabase = getWritableDatabase();
         final ContentValues contentValues = new ContentValues();
 
-        contentValues.put("description", desc);
+        contentValues.put(SessionTable.DESCRIPTION, desc);
 
-        writableDatabase.insertOrThrow("session", null, contentValues);
+        writableDatabase.insertOrThrow(SessionTable.NAME, null, contentValues);
     }
-    
-    public int countSessions()
+
+    /**
+     *
+     * @return Count of session records or -1 on error
+     */
+    public int getSessionCount()
     {
-        Cursor cursor = getReadableDatabase().rawQuery("select count(*) from session", null);
-        cursor.moveToFirst();
-        return cursor.getInt(0);
+        int count = -1;
+
+        Cursor cursor = getReadableDatabase().rawQuery(String.format("SELECT COUNT(*) FROM %1$s", SessionTable.NAME), null);
+
+        if(cursor.moveToFirst())
+            count = cursor.getInt(0);
+
+        cursor.close();;
+
+        return count;
     }
 
-    public void updateSession(Integer id, String desc)
+    /**
+     * Update record by ID with description
+     * @param id
+     * @param desc
+     */
+    public void updateSession(int id, String desc)
     {
         final SQLiteDatabase writableDatabase = getWritableDatabase();
         try
         {
             final ContentValues contentValues = new ContentValues();
 
-            contentValues.put("description", desc);
+            contentValues.put(SessionTable.DESCRIPTION, desc);
 
-            writableDatabase.update("session", contentValues, "id = ?", new String[]{id.toString()});
+            writableDatabase.update(
+                    SessionTable.NAME, contentValues, SessionTable._ID+"=?", new String[]{String.valueOf(id)});
         }
         finally
         {
         }
     }
 
+    /**
+     *
+     * @return All db records
+     */
     public List<Session> loadAllSessions()
     {
+        List<Session> sessions = new ArrayList<Session>();
+
         final SQLiteDatabase readableDatabase = getReadableDatabase();
-        List<Session> sessions;
-        final Cursor sessionCursor = readableDatabase.query("session", SESSION_COLS, null, null, null, null, "id", null);
+        final Cursor cursor = readableDatabase.query(SessionTable.NAME, SessionTable.COLS
+                , null, null, null, null, SessionTable._ID, null);
 
         try
         {
-            sessions = new ArrayList<Session>();
-
-            while (sessionCursor.moveToNext())
+            while (cursor.moveToNext())
             {
-                final Session session = sessionFromCursor(sessionCursor);
+                final Session session = sessionFromCursor(cursor);
 
                 sessions.add(session);
             }
         }
         finally
         {
-            sessionCursor.close();
+            cursor.close();
         }
 
         return sessions;
@@ -121,44 +160,36 @@ public class DatabaseHelper extends SQLiteOpenHelper
 
     public static class Session
     {
-        private Integer id;
-        private String description;
+        public final int id;
+        public final String description;
 
-        public Session(Integer id, String description)
+        public Session(int id, String description)
         {
             this.description = description;
             this.id = id;
         }
 
-        public String getDescription()
-        {
-            return description;
-        }
-
-        public Integer getId()
-        {
-            return id;
-        }
     }
 
-    public Session loadSession(Integer id)
+    /**
+     * Gets a single session from the DB
+     * If record doesn't exist or error, empty session is returned
+     * @param id
+     * @return
+     */
+    public Session getSession(int id)
     {
         final SQLiteDatabase readableDatabase = getReadableDatabase();
 
         final Session session;
-        final Cursor cursor = readableDatabase.query("session",
-                SESSION_COLS,
-                "id = ?",
-                new String[]{id.toString()},
-                null,
-                null,
-                null,
-                null
+        final Cursor cursor = readableDatabase.query(SessionTable.NAME,
+                SessionTable.COLS,
+                SessionTable._ID+"=?",
+                new String[]{String.valueOf(id)},
+                null,null,null,null
         );
         try
         {
-
-
             cursor.moveToNext();
 
             session = sessionFromCursor(cursor);
@@ -171,11 +202,15 @@ public class DatabaseHelper extends SQLiteOpenHelper
         return session;
     }
 
+    /**
+     * Record should be [ID, DESCRIPTION]
+     * @param cursor
+     * @return
+     */
     private Session sessionFromCursor(Cursor cursor)
     {
         final Session session = new Session(cursor.getInt(0), cursor.getString(1));
         return session;
     }
-
 
 }
