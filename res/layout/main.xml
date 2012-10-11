@@ -4,21 +4,35 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     >
-<TextView  
-    android:layout_width="fill_parent" 
-    android:layout_height="wrap_content" 
-    android:text="Hello World, MyActivity"
-    />
-    <Button
-            android:id="@+id/oneHelper"
-            android:layout_width="wrap_content"
+
+    <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="One Helper"/>
-    <Button
-            android:id="@+id/manyHelpers"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Many Helpers"/>
+            android:orientation="horizontal">
+
+        <Button
+                android:id="@+id/oneWrite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 Write"/>
+        <Button
+                android:id="@+id/manyWrite"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Write"/>
+
+        <Button
+                android:id="@+id/oneWriteManyRead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="1 Write + Read"/>
+        <Button
+                android:id="@+id/manyRead"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+ Read"/>
+
+    </LinearLayout>
 
     <Button
             android:id="@+id/testTransactionIsolation"
@@ -26,14 +40,17 @@
             android:layout_height="wrap_content"
             android:text="Test Transaction Isolation"/>
 
-    <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/numberOfInserts"/>
     <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
+
+        <EditText
+                android:layout_width="60dp"
+                android:layout_height="wrap_content"
+                android:id="@+id/numberOfInserts"
+                />
+
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -48,17 +65,63 @@
                 android:id="@+id/trans"/>
     </LinearLayout>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exclusive No Yielding"
+                android:id="@+id/no_yielding" />
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Safely Contend Yield"
+                android:id="@+id/yielding" />
+
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            >
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="No Yield Read"
+                android:id="@+id/no_yield_read" />
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Yield and Read"
+                android:id="@+id/yield_and_read" />
+
+    </LinearLayout>
+
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/timeOut"/>
 
-
     <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:id="@+id/results"
-            android:text=""/>
+            />
+
+    <co.touchlab.dblocking.TickerBar
+        android:id="@+id/tickerBar"
+        android:layout_height="40px"
+        android:layout_width="match_parent"
+        />
 
 </LinearLayout>
 
