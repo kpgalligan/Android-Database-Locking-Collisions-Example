@@ -6,10 +6,12 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 import co.touchlab.R;
 
 import java.util.ArrayList;
@@ -99,6 +101,10 @@ public class MyActivity extends Activity
     @SuppressWarnings("unchecked")
     private void runTrans()
     {
+    	if (!isValidInput()) {
+    		Toast.makeText(this, "Invalid Input. A number is required to insert into db the number of times.", Toast.LENGTH_SHORT).show();
+    		return;
+    	}
         new AsyncTask(){
 
             @Override
@@ -126,10 +132,48 @@ public class MyActivity extends Activity
 
 
     }
+
+	private boolean isValidInput() 
+	{
+		String input = ((EditText) findViewById(R.id.numberOfInserts)).getText().toString().trim();
+    	if (TextUtils.isEmpty(input))  {
+    		return false; 
+    	}
+    	return IsInt_ByJonas(input);
+	}
     
+	private boolean IsInt_ByJonas(String str)
+	{
+	    if (str == null) {
+	            return false;
+	    }
+	    int length = str.length();
+	    if (length == 0) {
+	            return false;
+	    }
+	    int i = 0;
+	    if (str.charAt(0) == '-') {
+	            if (length == 1) {
+	                    return false;
+	            }
+	            i = 1;
+	    }
+	    for (; i < length; i++) {
+	            char c = str.charAt(i);
+	            if (c <= '/' || c >= ':') {
+	                    return false;
+	            }
+	    }
+	    return true;
+	}
+	
     @SuppressWarnings("unchecked")
     private void runNoTrans()
     {
+       	if (!isValidInput()) {
+    		Toast.makeText(this, "Invalid Input. A number is required to insert into db the number of times.", Toast.LENGTH_SHORT).show();
+    		return;
+    	}
         new AsyncTask(){
 
             @Override
