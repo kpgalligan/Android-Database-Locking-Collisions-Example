@@ -1,3 +1,5 @@
 Example app showing how you can cause DB collisions pretty easily with multiple SQLiteHelper instances.
 
 Also demonstrate dramatic time difference using transactions.
+
+Blog post: http://www.touchlab.co/blog/2011/01/android-sqlite-locking
